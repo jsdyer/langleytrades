@@ -1,0 +1,12 @@
+{
+  "source": "https://data-tol.opendata.arcgis.com/datasets/c80ce8a03364426aa301ca888f149272",
+  "captures": [
+    {
+      "id": "20261123T190149Z",
+      "file": "captures/20261123T190149Z.json",
+      "retrieved": "20261123T190149Z",
+      "licences": 6212,
+      "coverage": "full"
+    }
+  ]
+}

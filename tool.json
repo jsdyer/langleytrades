@@ -1,16 +1,25 @@
 {
-  "id": "coolcode-tool-template",
-  "title": "CoolCode Tool Starter",
-  "description": "A browser-only example that trims lines and removes exact duplicates.",
-  "category": "security",
-  "tags": ["text", "lines", "duplicates"],
-  "icon": "scan-search",
-  "url": "/coolcode-tool-template/",
-  "source": "https://github.com/jsdyer/coolcode-tool-template",
+  "id": "langleytrades",
+  "title": "Langley Trades",
+  "description": "Search the Township of Langley business-licence file by trade, name or street, and see which names arrived or left since the previous file.",
+  "category": "places",
+  "tags": ["canada", "local", "public data", "langley", "business"],
+  "icon": "building-2",
+  "url": "/langleytrades/",
+  "source": "https://github.com/jsdyer/langleytrades",
   "hosting": "project",
   "access": "browser",
   "data_info": {
-    "mode": "local",
-    "detail": "The browser reads the text you paste and compares its lines."
+    "mode": "snapshot",
+    "cadence": "Monthly",
+    "detail": "The Township of Langley open-data business-licence layer supplies the name, trade, civic address, community and phone already published on the licence directory.",
+    "probes": [
+      {
+        "label": "Licence file",
+        "url": "https://coolcode.ca/langleytrades/data/status.json",
+        "path": ["retrieved"],
+        "count_at": { "path": ["licences"], "unit": "licences" }
+      }
+    ]
   }
 }

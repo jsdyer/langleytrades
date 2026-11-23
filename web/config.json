@@ -1,0 +1,5 @@
+{
+  "query": "restaurant",
+  "trades": ["restaurant", "salon", "contractor", "daycare", "medical", "auto"],
+  "retain": 6
+}
