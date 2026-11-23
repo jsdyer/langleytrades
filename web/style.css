@@ -20,10 +20,12 @@ input, select { display: block; width: 100%; min-height: 44px; padding: .55rem .
 .chips button[aria-pressed="true"] { outline: 2px solid var(--mark); outline-offset: 1px; }
 #finding { font-size: 1.05rem; max-width: 48rem; }
 .note, #status { color: var(--muted); }
-.map { height: clamp(220px, 42vw, 380px); margin-top: .4rem; background: #e4ead8; border: 1px solid var(--line); overflow: hidden; }
-.map svg { width: 100%; height: 100%; display: block; }
-.map circle { fill: var(--dot); }
-.map circle.gone { fill: var(--mark); }
+.map { height: clamp(280px, 48vw, 460px); margin-top: .4rem; background: #e4ead8; border: 1px solid var(--line); position: relative; }
+.maplibregl-ctrl-attrib { font-size: .72rem; background: rgba(250, 249, 237, .92); }
+.maplibregl-ctrl-attrib a { color: inherit; }
+.maplibregl-ctrl-group { border-color: var(--line); }
+.maplibregl-ctrl-group button { width: 40px; height: 40px; }
+.maplibregl-popup-content { font: .92rem/1.4 system-ui, sans-serif; color: var(--ink); background: var(--surface); }
 .table-wrap { overflow-x: auto; margin-top: .8rem; }
 table { width: 100%; border-collapse: collapse; font-size: .95rem; }
 caption { text-align: left; font-weight: 650; margin-bottom: .4rem; }

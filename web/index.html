@@ -6,6 +6,8 @@
   <meta name="description" content="{{DESCRIPTION}}">
   <title>{{TITLE}} · CoolCode</title>
   <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./vendor/maplibre-gl.css">
+  <script src="./vendor/maplibre-gl.js"></script>
   <script type="module" src="./app.mjs"></script>
   {{VISIT_COUNTER}}
 </head>
@@ -38,7 +40,7 @@
       </div>
       <div class="chips" id="trades"></div>
       <p id="finding" role="status" aria-live="polite">Reading the licence file.</p>
-      <div id="map" class="map" aria-hidden="true"></div>
+      <div id="map" class="map" role="region" aria-label="Street map of matching licences"></div>
       <p class="note" id="map-note"></p>
       <div class="table-wrap">
         <table>
@@ -50,7 +52,7 @@
       <div class="actions"><button id="more" type="button" hidden>Show more</button></div>
       <noscript><p>This tool needs JavaScript to read the saved licence file.</p></noscript>
     </section>
-    <aside aria-label="Privacy"><strong>The search stays in this tab.</strong> The page loads a Township licence file that was already saved here. Typing a trade does not send it anywhere. Phone numbers and streets are the ones the Township publishes, including some home businesses. This page does not add addresses the file left blank.</aside>
+    <aside aria-label="Privacy"><strong>The search stays in this tab.</strong> The page loads a Township licence file that was already saved here. Typing a trade does not send it anywhere. The street map is OpenStreetMap, requested from OpenFreeMap when the map is on screen. Phone numbers and streets are the ones the Township publishes, including some home businesses. This page does not add addresses the file left blank.</aside>
   </main>
   <footer>Part of <a href="https://coolcode.ca/">the CoolCode collection</a>. {{ISSUE_LINK}}</footer>
 </body>

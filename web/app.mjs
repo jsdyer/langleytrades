@@ -1,5 +1,5 @@
 import {
-  boundsFor, communityOptions, compareLicences, formatAddress, formatWhen, project, searchLicences,
+  boundsFor, communityOptions, compareLicences, formatAddress, formatWhen, searchLicences,
 } from "./model.mjs";
 
 const queryInput = document.querySelector("#query");
@@ -13,7 +13,7 @@ const rows = document.querySelector("#rows");
 const caption = document.querySelector("#table-caption");
 const more = document.querySelector("#more");
 const PAGE = 40;
-const state = { config: { query: "", trades: [] }, index: null, captures: new Map(), shown: PAGE };
+const state = { config: { query: "", trades: [] }, index: null, captures: new Map(), shown: PAGE, pending: [] };
 
 function text(node, value) {
   node.textContent = value;
@@ -65,32 +65,86 @@ function matchingRows() {
   return matched;
 }
 
-function drawMap(matched) {
-  clear(map);
-  const placed = matched.filter((row) => Number.isFinite(row.lat) && Number.isFinite(row.lon));
-  const bounds = boundsFor(placed);
+function placeFeatures(rows) {
+  const gone = changeSelect.value === "left" ? 1 : 0;
+  return {
+    type: "FeatureCollection",
+    features: rows.filter((row) => Number.isFinite(row.lat) && Number.isFinite(row.lon)).map((row) => ({
+      type: "Feature",
+      properties: { title: `${row.name}, ${formatAddress(row)}`, gone },
+      geometry: { type: "Point", coordinates: [row.lon, row.lat] },
+    })),
+  };
+}
+
+function paintMap() {
+  const placed = state.pending.filter((row) => Number.isFinite(row.lat) && Number.isFinite(row.lon));
   text(mapNote, placed.length
-    ? `${placed.length.toLocaleString("en-CA")} of ${matched.length.toLocaleString("en-CA")} have a published location. The list is the record.`
+    ? `${placed.length.toLocaleString("en-CA")} of ${state.pending.length.toLocaleString("en-CA")} have a published location. The list is the record.`
     : "None of these licences have a published location.");
+  if (!state.map || !state.mapReady) return;
+  state.map.getSource("places").setData(placeFeatures(state.pending));
+  state.map.resize();
+  const bounds = boundsFor(placed);
   if (!bounds) return;
-  const width = 800;
-  const height = 420;
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  const gone = changeSelect.value === "left";
-  for (const row of placed) {
-    const [x, y] = project(row, bounds, width, height);
-    const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    dot.setAttribute("cx", x.toFixed(1));
-    dot.setAttribute("cy", y.toFixed(1));
-    dot.setAttribute("r", "4");
-    if (gone) dot.classList.add("gone");
-    const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
-    title.textContent = `${row.name}, ${formatAddress(row)}`;
-    dot.append(title);
-    svg.append(dot);
+  state.map.fitBounds([[bounds.minLon, bounds.minLat], [bounds.maxLon, bounds.maxLat]], { padding: 36, animate: false, maxZoom: 14 });
+}
+
+function ensureMap() {
+  if (state.map || state.mapFailed) return;
+  if (!window.maplibregl) {
+    state.mapFailed = true;
+    map.textContent = "The street map did not load.";
+    return;
   }
-  map.append(svg);
+  try {
+    const streets = new window.maplibregl.Map({
+      container: map,
+      style: state.config.mapStyle || "https://tiles.openfreemap.org/styles/positron",
+      center: [-122.62, 49.1],
+      zoom: 11,
+      scrollZoom: false,
+      cooperativeGestures: false,
+      attributionControl: true,
+    });
+    streets.addControl(new window.maplibregl.NavigationControl({ showCompass: false }), "top-right");
+    streets.on("load", () => {
+      streets.addSource("places", { type: "geojson", data: placeFeatures([]) });
+      streets.addLayer({
+        id: "places",
+        type: "circle",
+        source: "places",
+        paint: {
+          "circle-radius": 6,
+          "circle-color": ["case", ["==", ["get", "gone"], 1], "#ca6c1b", "#1f6b45"],
+          "circle-stroke-width": 1.5,
+          "circle-stroke-color": "#faf9ed",
+        },
+      });
+      streets.on("click", "places", (event) => {
+        const feature = event.features && event.features[0];
+        if (!feature) return;
+        new window.maplibregl.Popup({ closeButton: true, maxWidth: "260px" })
+          .setLngLat(event.lngLat)
+          .setText(feature.properties.title || "Licence")
+          .addTo(streets);
+      });
+      streets.on("mouseenter", "places", () => { streets.getCanvas().style.cursor = "pointer"; });
+      streets.on("mouseleave", "places", () => { streets.getCanvas().style.cursor = ""; });
+      state.mapReady = true;
+      paintMap();
+    });
+    state.map = streets;
+  } catch {
+    state.mapFailed = true;
+    map.textContent = "The street map did not start in this browser.";
+  }
+}
+
+function drawMap(matched) {
+  state.pending = matched;
+  ensureMap();
+  paintMap();
 }
 
 function drawTable(matched) {
@@ -196,6 +250,7 @@ async function main() {
   communitySelect.addEventListener("change", () => { state.shown = PAGE; render(); });
   changeSelect.addEventListener("change", () => { state.shown = PAGE; render(); });
   more.addEventListener("click", () => { state.shown += PAGE; render(); });
+  window.addEventListener("resize", () => { if (state.map) state.map.resize(); });
   render();
 }
 

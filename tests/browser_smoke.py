@@ -30,13 +30,14 @@ def main():
                 page.on("pageerror", lambda error: errors.append(str(error)))
                 page.goto(f"http://127.0.0.1:{server.server_port}/langleytrades/")
                 page.wait_for_function("() => document.querySelector('#finding').textContent.includes('licences')")
+                page.wait_for_function("() => document.querySelector('#map canvas')")
                 assert "restaurant" in page.locator("#finding").inner_text().lower()
                 page.locator("#query").fill("roofing")
                 page.wait_for_function("() => document.querySelector('#rows').textContent.toLowerCase().includes('roof')")
                 page.locator("#query").fill('<img src=x onerror="alert(1)">')
                 html = page.locator("#finding").inner_html()
                 assert "<img" not in html
-                assert page.locator("img").count() == 0
+                assert page.locator('img[src="x"]').count() == 0
                 page.locator("#query").fill("restaurant")
                 page.screenshot(path=str(screenshots / "desktop.png"), full_page=True)
                 page.set_viewport_size({"width": 390, "height": 844})

@@ -1,5 +1,6 @@
 {
   "query": "restaurant",
   "trades": ["restaurant", "salon", "contractor", "daycare", "medical", "auto"],
-  "retain": 6
+  "retain": 6,
+  "mapStyle": "https://tiles.openfreemap.org/styles/positron"
 }

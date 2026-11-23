@@ -14,11 +14,11 @@ The Township directory is updated around the start of each month. Out-of-town li
 
 ## Source
 
-[Township of Langley business licences](https://data-tol.opendata.arcgis.com/datasets/c80ce8a03364426aa301ca888f149272), Open Government Licence – Township of Langley. No API key. The query is the public feature layer. Home-business streets that the Township publishes are shown as published and are not geocoded further.
+[Township of Langley business licences](https://data-tol.opendata.arcgis.com/datasets/c80ce8a03364426aa301ca888f149272), Open Government Licence – Township of Langley. No API key. The query is the public feature layer. Home-business streets that the Township publishes are shown as published and are not geocoded further. Streets on the map are [OpenFreeMap](https://openfreemap.org/) Positron, from OpenStreetMap, drawn with MapLibre GL 5.15.0 in `web/vendor/` (BSD-3-Clause).
 
 ## Expand or customize
 
-Defaults live in [web/config.json](web/config.json). `query` is the search the page opens with. `trades` are buttons, not a limit: a visitor can type roofing or any other word in the file. `retain` is how many monthly files to keep.
+Defaults live in [web/config.json](web/config.json). `query` is the search the page opens with. `trades` are buttons, not a limit: a visitor can type roofing or any other word in the file. `retain` is how many monthly files to keep. `mapStyle` is the street-map style URL.
 
 ```sh
 python3 scripts/refresh.py
