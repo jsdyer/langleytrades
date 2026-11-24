@@ -26,6 +26,11 @@ class BuildTests(unittest.TestCase):
         (self.root / "private.txt").write_text("must not publish")
         self.edit(title='<img src=x onerror="bad()">')
         build(self.root)
+        from datetime import datetime, timezone
+        source=json.loads((self.root/"web/data/status.json").read_text())["retrieved"]
+        status=json.loads((self.root/"dist/data/status.json").read_text())
+        expected=datetime.strptime(source,"%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
+        self.assertEqual(datetime.fromisoformat(status["retrieved_at"]),expected)
         page = (self.root / "dist/index.html").read_text()
         self.assertIn('&lt;img', page)
         self.assertNotIn('<img', page)

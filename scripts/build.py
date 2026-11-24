@@ -2,6 +2,7 @@
 """Build a browser tool using Python's standard library; no network required."""
 from html import escape
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 import re
 import shutil
@@ -51,6 +52,13 @@ def build(root=ROOT):
     with tempfile.TemporaryDirectory(prefix="coolcode-tool-") as temporary:
         stage = Path(temporary) / "site"
         shutil.copytree(web, stage)
+        status_path = stage / "data/status.json"
+        status = json.loads(status_path.read_text())
+        # Normalize the capture identifier, without substituting the build time.
+        captured = status.get("retrieved")
+        status["retrieved_at"] = (datetime.strptime(captured, "%Y%m%dT%H%M%SZ")
+                                  .replace(tzinfo=timezone.utc).isoformat() if captured else None)
+        status_path.write_text(json.dumps(status) + "\n")
         index = stage / "index.html"
         page = index.read_text(encoding="utf-8")
         for token, key in {"TITLE": "title", "DESCRIPTION": "description", "TOOL_ID": "id", "SOURCE_URL": "source"}.items():
